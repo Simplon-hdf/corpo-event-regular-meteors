@@ -2,7 +2,7 @@
 
 ### ➤ Utilisateurs : 
 
-**RG1 :** Un utilisateur peut-être un administrateur, un collaborateur ou un utilisateur lambda.
+**RG1 :** Un utilisateur peut-être un administrateur, un collaborateur ou un employé.
 **RG2 :** Un utilisateur peut se créer un compte.
 **RG3 :** Un utilisateur peut se connecter à un compte.
 **RG4 :** Un utilisateur peut se déconnecter d'un compte.
