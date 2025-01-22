@@ -1,0 +1,46 @@
+# Fichiers de compilation
+*.class
+*.jar
+*.war
+*.ear
+
+# Répertoires de compilation
+/bin/
+/build/
+/out/
+target/
+
+# Fichiers de dépendances (Maven et Gradle)
+.mvn/
+.gradle/
+**/build/
+
+# Fichiers IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Fichiers système macOS
+.DS_Store
+
+# Fichiers système Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Environnements virtuels et fichiers de configuration locaux
+.env
+*.swp
+*.swo
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+*.swo
+
