@@ -44,3 +44,9 @@ logs/
 *.swp
 *.swo
 
+# VS Code
+.vscode/
+
+# Application data
+CorpoEvent/data/
+
