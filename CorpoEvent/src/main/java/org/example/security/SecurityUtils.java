@@ -18,11 +18,9 @@ public class SecurityUtils {
         if (user == null || event == null) {
             return false;
         }
-        // Un admin peut tout modifier
         if (user instanceof Admin) {
             return true;
         }
-        // Un collaborateur peut modifier ses propres événements
         return user instanceof Collaborator && event.getCreatedBy().equals(user);
     }
 
@@ -38,11 +36,9 @@ public class SecurityUtils {
         if (user == null || comment == null) {
             return false;
         }
-        // Un admin peut supprimer n'importe quel commentaire
         if (user instanceof Admin) {
             return true;
         }
-        // Un utilisateur peut supprimer ses propres commentaires
         return comment.getAuthor().getUuid().equals(user.getUuid());
     }
 
@@ -50,16 +46,14 @@ public class SecurityUtils {
         if (user == null || comment == null) {
             return false;
         }
-        // Un admin peut modifier n'importe quel commentaire
         if (user instanceof Admin) {
             return true;
         }
-        // Un utilisateur peut modifier ses propres commentaires
         return comment.getAuthor().getUuid().equals(user.getUuid());
     }
 
     public static boolean canRateEvent(User user) {
-        return true; // Tous les utilisateurs peuvent noter
+        return true;
     }
 
     public static boolean canScheduleEvent(User user) {
