@@ -25,8 +25,8 @@ public class Comment {
     @NotNull(message = "L'auteur est obligatoire")
     private User author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
     @NotNull(message = "L'événement est obligatoire")
     private Event event;
 
@@ -37,6 +37,9 @@ public class Comment {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Le contenu ne peut pas être vide");
         }
+        if (event == null) {
+            throw new IllegalArgumentException("L'événement est obligatoire");
+        }
         this.uuid = uuid;
         this.content = content;
         this.author = author;
@@ -46,7 +49,24 @@ public class Comment {
     }
 
     public void setEvent(Event event) {
+        if (this.event != null) {
+            this.event.getComments().remove(this);
+        }
         this.event = event;
+        if (event != null) {
+            event.getComments().add(this);
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void setAuthor(User author) {
+        if (this.author != null) {
+            this.author.getComments().remove(this);
+        }
+        this.author = author;
+        if (author != null) {
+            author.getComments().add(this);
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
