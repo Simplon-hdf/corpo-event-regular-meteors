@@ -13,9 +13,10 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING, length = 20)
+@DiscriminatorValue("USER")
 @Getter @Setter @NoArgsConstructor
-public class User {
+public abstract class User {
     @Id
     private String uuid;
 
@@ -45,5 +46,18 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return uuid.equals(user.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 } 
