@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,11 +24,8 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
-    private List<User> predefinedUsers;
-
     @PostConstruct
     public void init() {
-        // Créer les utilisateurs prédéfinis s'ils n'existent pas déjà
         Admin admin = new Admin(UUID.randomUUID().toString(), "Jean", "Dupont", "admin@corpoevent.fr", "password");
         logger.info("Creating admin user: {} of type {}", admin.getEmail(), admin.getClass().getSimpleName());
         createUserIfNotExists(admin);
@@ -39,16 +35,6 @@ public class HomeController {
         );
         createUserIfNotExists(
             new Collaborator(UUID.randomUUID().toString(), "Pierre", "Bernard", "collab2@corpoevent.fr", "password")
-        );
-        
-        // Mettre à jour la liste des utilisateurs depuis la base de données
-        User savedAdmin = userService.findByEmail("admin@corpoevent.fr");
-        logger.info("Retrieved admin user: {} of type {}", savedAdmin.getEmail(), savedAdmin.getClass().getSimpleName());
-        
-        predefinedUsers = Arrays.asList(
-            savedAdmin,
-            userService.findByEmail("collab1@corpoevent.fr"),
-            userService.findByEmail("collab2@corpoevent.fr")
         );
     }
 
@@ -66,19 +52,22 @@ public class HomeController {
         if (currentUser != null) {
             return "redirect:/events";
         }
-        model.addAttribute("users", predefinedUsers);
+        
+        List<User> allUsers = userService.getAllUsers();
+        model.addAttribute("users", allUsers);
         return "index";
     }
 
     @GetMapping("/login/{index}")
     public String login(@PathVariable int index, HttpSession session) {
-        if (index >= 0 && index < predefinedUsers.size()) {
-            User user = userService.findByEmail(predefinedUsers.get(index).getEmail());
-            // Force le chargement du type d'utilisateur
+        List<User> users = userService.getAllUsers();
+        
+        if (index >= 0 && index < users.size()) {
+            User user = users.get(index);
             boolean isAdmin = user instanceof Admin;
             logger.info("User logging in: {} of type {}, isAdmin: {}", user.getEmail(), user.getClass().getSimpleName(), isAdmin);
             session.setAttribute("currentUser", user);
-            session.setMaxInactiveInterval(1800); // 30 minutes
+            session.setMaxInactiveInterval(1800);
             return "redirect:/events";
         }
         return "redirect:/";
