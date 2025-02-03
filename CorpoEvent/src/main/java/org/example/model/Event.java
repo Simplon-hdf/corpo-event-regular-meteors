@@ -31,11 +31,11 @@ public class Event {
     @NotNull(message = "La date de fin est obligatoire")
     private LocalDateTime endDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     private LocalDateTime createdAt;
@@ -62,6 +62,10 @@ public class Event {
         comments.remove(comment);
         comment.setEvent(null);
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void clearComments() {
+        comments.clear();
     }
 
     public boolean isOwner(User user) {
