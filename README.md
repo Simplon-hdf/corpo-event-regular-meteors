@@ -1,3 +1,61 @@
+# CorpoEvent
+
+Application de gestion d'événements d'entreprise.
+
+## Stack Technique
+
+- Java 11
+- Spring Boot 2.7.x
+- Spring Data JPA
+- Spring MVC
+- Thymeleaf
+- Bootstrap 5
+- H2 Database
+- Maven
+
+## Prérequis
+
+- Java 11 ou supérieur
+- Maven 3.6 ou supérieur
+
+## Installation et Lancement
+
+1. Cloner le projet :
+```bash
+git clone [url-du-repo]
+cd corpo-event
+```
+
+2. Compiler le projet :
+```bash
+mvn clean install
+```
+
+3. Lancer l'application :
+```bash
+mvn spring-boot:run
+```
+
+4. Accéder à l'application :
+- URL : http://localhost:8080
+- Utilisateurs par défaut :
+  - Admin : admin@corpoevent.fr / password
+  - Collaborateur : collab1@corpoevent.fr / password
+
+## Base de données H2
+
+H2 est une base de données en mémoire utilisée pour le développement.
+
+- Console H2 : http://localhost:8080/h2-console
+- JDBC URL : jdbc:h2:mem:corpoevent
+- Username : sa
+- Password : password
+
+La base de données est réinitialisée à chaque redémarrage de l'application avec les données par défaut :
+- Un administrateur
+- Deux collaborateurs
+- Aucun événement initial
+
 ## ⏳ Brief Corpo-Event
 
 ### Contexte :

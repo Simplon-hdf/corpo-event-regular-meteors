@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CorpoEvent - Détails de l'événement</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/events">CorpoEvent</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">Événements</a>
+                    </li>
+                    <li class="nav-item" th:if="${currentUser instanceof T(org.example.model.Admin)}">
+                        <a class="nav-link" href="/admin/users">Utilisateurs</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center text-white">
+                    <span class="me-3" th:text="${currentUser.firstName + ' ' + currentUser.lastName}">Utilisateur</span>
+                    <span class="badge me-3" th:classappend="${currentUser instanceof T(org.example.model.Admin) ? 'bg-danger' : 'bg-primary'}"
+                          th:text="${currentUser instanceof T(org.example.model.Admin) ? 'Administrateur' : 'Collaborateur'}">
+                        Role
+                    </span>
+                    <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <!-- Messages de notification -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/events">Événements</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${event.title}">Détails de l'événement</li>
+            </ol>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title" th:text="${event.title}">Titre de l'événement</h1>
+                <p class="card-text" th:text="${event.description}">Description de l'événement</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Informations</h5>
+                        <ul class="list-unstyled">
+                            <li><strong>Date de début:</strong> <span th:text="${#temporals.format(event.startDate, 'dd/MM/yyyy HH:mm')}">Date début</span></li>
+                            <li><strong>Date de fin:</strong> <span th:text="${#temporals.format(event.endDate, 'dd/MM/yyyy HH:mm')}">Date fin</span></li>
+                            <li>
+                                <strong>Créé par:</strong>
+                                <span class="d-inline-flex align-items-center">
+                                    <span class="me-2" th:text="${event.createdBy.firstName + ' ' + event.createdBy.lastName}">Créateur</span>
+                                    <span class="badge" 
+                                          th:classappend="${event.createdBy instanceof T(org.example.model.Admin) ? 'bg-danger' : 'bg-primary'}"
+                                          th:text="${event.createdBy instanceof T(org.example.model.Admin) ? 'Administrateur' : 'Collaborateur'}">
+                                        Role
+                                    </span>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4" th:if="${canModify || canDelete}">
+                    <h5>Actions</h5>
+                    <div class="btn-group">
+                        <a th:if="${canModify}" th:href="@{'/events/' + ${event.uuid} + '/edit'}" 
+                           class="btn btn-outline-primary">Modifier</a>
+                        <form th:if="${canDelete}" th:action="@{'/events/' + ${event.uuid} + '/delete'}" 
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-danger"
+                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')">
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comments mt-4">
+            <h3>Commentaires</h3>
+            
+            <div th:each="comment : ${event.comments}" class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <h6 class="card-subtitle text-muted mb-0 me-2" th:text="${comment.author.firstName + ' ' + comment.author.lastName}">Auteur</h6>
+                                <span class="badge" 
+                                      th:classappend="${comment.author instanceof T(org.example.model.Admin) ? 'bg-danger' : 'bg-primary'}"
+                                      th:text="${comment.author instanceof T(org.example.model.Admin) ? 'Administrateur' : 'Collaborateur'}">
+                                    Role
+                                </span>
+                            </div>
+                            <p class="card-text" th:text="${comment.content}">Contenu du commentaire</p>
+                            <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'dd/MM/yyyy HH:mm')}">Date</small>
+                        </div>
+                        
+                        <div class="btn-group" 
+                             th:if="${@securityUtils.canDeleteComment(currentUser, comment) || @securityUtils.canEditComment(currentUser, comment)}">
+                            
+                            <!-- Bouton Modifier -->
+                            <button th:if="${@securityUtils.canEditComment(currentUser, comment)}"
+                                    class="btn btn-sm btn-outline-primary me-2"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#editCommentModal' + ${comment.uuid}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            
+                            <!-- Bouton Supprimer -->
+                            <form th:if="${@securityUtils.canDeleteComment(currentUser, comment)}"
+                                  th:action="@{'/events/' + ${event.uuid} + '/comments/' + ${comment.uuid} + '/delete'}"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal pour modifier un commentaire -->
+            <div th:each="comment : ${event.comments}" 
+                 th:if="${@securityUtils.canEditComment(currentUser, comment)}"
+                 class="modal fade" 
+                 th:id="'editCommentModal' + ${comment.uuid}" 
+                 tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modifier le commentaire</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{'/events/' + ${event.uuid} + '/comments/' + ${comment.uuid} + '/edit'}" method="post">
+                            <div class="modal-body">
+                                <textarea name="content" class="form-control" rows="3" required th:text="${comment.content}"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form th:if="${canComment}" th:action="@{'/events/' + ${event.uuid} + '/comments'}" 
+              method="post" class="mt-4">
+            <div class="mb-3">
+                <label for="content" class="form-label">Ajouter un commentaire</label>
+                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
