@@ -20,7 +20,7 @@ public class EventService {
     }
 
     public Event getEvent(String uuid) {
-        return eventRepository.findById(uuid)
+        return eventRepository.findByIdWithCreatedBy(uuid)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
     }
 

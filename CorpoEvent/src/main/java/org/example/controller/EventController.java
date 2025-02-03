@@ -2,7 +2,6 @@ package org.example.controller;
 
 import org.example.model.Event;
 import org.example.model.User;
-import org.example.model.Admin;
 import org.example.security.SecurityUtils;
 import org.example.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,8 @@ public class EventController {
     @GetMapping
     public String listEvents(Model model, HttpSession session) {
         User currentUser = (User) session.getAttribute("currentUser");
-        boolean isAdmin = currentUser instanceof Admin;
         model.addAttribute("events", eventService.getAllEvents());
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("canCreateEvent", SecurityUtils.canCreateEvent(currentUser));
         return "events/list";
     }

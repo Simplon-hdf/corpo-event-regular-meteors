@@ -14,11 +14,15 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="/events">Événements</a>
                     </li>
+                    <li class="nav-item" th:if="${currentUser instanceof T(org.example.model.Admin)}">
+                        <a class="nav-link" href="/admin/users">Utilisateurs</a>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center text-white">
                     <span class="me-3" th:text="${currentUser.firstName + ' ' + currentUser.lastName}">Utilisateur</span>
-                    <span class="badge me-3" th:classappend="${isAdmin ? 'bg-danger' : 'bg-primary'}"
-                          th:text="${isAdmin ? 'Administrateur' : 'Collaborateur'}">
+                    <span class="badge me-3" 
+                          th:classappend="${currentUser instanceof T(org.example.model.Admin) ? 'bg-danger' : 'bg-primary'}"
+                          th:text="${currentUser instanceof T(org.example.model.Admin) ? 'Administrateur' : 'Collaborateur'}">
                         Role
                     </span>
                     <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">Déconnexion</a>

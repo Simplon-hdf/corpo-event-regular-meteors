@@ -14,4 +14,14 @@ public class Collaborator extends User {
     public Collaborator(String uuid, String firstName, String lastName, String email, String password) {
         super(uuid, firstName, lastName, email, password);
     }
+
+    @Override
+    public String toString() {
+        return "Collaborator{" +
+                "uuid='" + getUuid() + '\'' +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                '}';
+    }
 } 
