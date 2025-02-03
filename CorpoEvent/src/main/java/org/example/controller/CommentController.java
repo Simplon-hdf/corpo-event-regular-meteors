@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.UUID;
 
 @Controller
@@ -45,6 +44,27 @@ public class CommentController {
         return "redirect:/events/" + eventId;
     }
 
+    @PostMapping("/{commentId}/edit")
+    public String editComment(@PathVariable String eventId,
+                            @PathVariable String commentId,
+                            @RequestParam String content,
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        Comment comment = commentService.getComment(commentId);
+
+        if (!SecurityUtils.canEditComment(currentUser, comment)) {
+            redirectAttributes.addFlashAttribute("error", "Vous n'avez pas la permission de modifier ce commentaire.");
+            return "redirect:/events/" + eventId;
+        }
+
+        comment.setContent(content);
+        commentService.updateComment(comment);
+        redirectAttributes.addFlashAttribute("success", "Le commentaire a été modifié avec succès.");
+        
+        return "redirect:/events/" + eventId;
+    }
+
     @PostMapping("/{commentId}/delete")
     public String deleteComment(@PathVariable String eventId,
                               @PathVariable String commentId,
@@ -53,7 +73,7 @@ public class CommentController {
         User currentUser = (User) session.getAttribute("currentUser");
         Comment comment = commentService.getComment(commentId);
 
-        if (!SecurityUtils.canDeleteComment(currentUser)) {
+        if (!SecurityUtils.canDeleteComment(currentUser, comment)) {
             redirectAttributes.addFlashAttribute("error", "Vous n'avez pas la permission de supprimer ce commentaire.");
             return "redirect:/events/" + eventId;
         }
