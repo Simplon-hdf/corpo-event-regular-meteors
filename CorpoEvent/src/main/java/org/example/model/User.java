@@ -34,10 +34,10 @@ public abstract class User {
     @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
 
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private List<Event> events = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     public User(String uuid, String firstName, String lastName, String email, String password) {
@@ -59,5 +59,29 @@ public abstract class User {
     @Override
     public int hashCode() {
         return uuid.hashCode();
+    }
+
+    public void addEvent(Event event) {
+        events.add(event);
+        event.setCreatedBy(this);
+    }
+
+    public void removeEvent(Event event) {
+        events.remove(event);
+        if (event.getCreatedBy() == this) {
+            event.setCreatedBy(null);
+        }
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setAuthor(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        if (comment.getAuthor() == this) {
+            comment.setAuthor(null);
+        }
     }
 } 
