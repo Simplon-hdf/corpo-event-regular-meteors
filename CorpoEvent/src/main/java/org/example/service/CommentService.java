@@ -22,6 +22,10 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
 
+    public Comment updateComment(Comment comment) {
+        return commentRepository.save(comment);
+    }
+
     public void deleteComment(String uuid) {
         commentRepository.deleteById(uuid);
     }
